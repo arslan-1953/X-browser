@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="small-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1DA1F2" />
+      <stop offset="100%" stop-color="#0D529C" />
+    </linearGradient>
+  </defs>
+
+  <!-- Web Globe -->
+  <g transform="translate(200, 200)">
+    <!-- Globe Base Outer Circle -->
+    <circle cx="0" cy="0" r="185" fill="none" stroke="url(#small-grad)" stroke-width="14" />
+
+    <!-- Equator Line -->
+    <line x1="-185" y1="0" x2="185" y2="0" stroke="url(#small-grad)" stroke-width="10" opacity="0.65" />
+
+    <!-- Latitude Curves -->
+    <path d="M -160,-92 Q 0,-38 160,-92" fill="none" stroke="url(#small-grad)" stroke-width="10" opacity="0.55" />
+    <path d="M -160,92 Q 0,38 160,92" fill="none" stroke="url(#small-grad)" stroke-width="10" opacity="0.55" />
+
+    <!-- Longitude Ellipses -->
+    <ellipse cx="0" cy="0" rx="123" ry="185" fill="none" stroke="url(#small-grad)" stroke-width="10" opacity="0.65" />
+    <ellipse cx="0" cy="0" rx="61" ry="185" fill="none" stroke="url(#small-grad)" stroke-width="10" opacity="0.65" />
+
+    <!-- Center Meridian Line -->
+    <line x1="0" y1="-185" x2="0" y2="185" stroke="url(#small-grad)" stroke-width="10" opacity="0.65" />
+
+    <!-- Center White Emblem Box -->
+    <circle cx="0" cy="0" r="80" fill="#FFFFFF" stroke="#1DA1F2" stroke-width="8" />
+
+    <!-- Bold Centered X -->
+    <path d="M -38,-38 L 38,38 M 38,-38 L -38,38" stroke="#1DA1F2" stroke-width="22" stroke-linecap="round" />
+  </g>
+</svg>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>New tab | X Browser</title>
+    <link rel="icon" href="../assets/brand/logo-medium.svg" />
+    <link rel="stylesheet" href="poppins.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="./scripts.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./index.html" aria-label="X Browser home">
+        <img src="../assets/brand/logo-small.svg" alt="" />
+        <span>X Browser</span>
+      </a>
+      <nav class="quick-links" aria-label="Quick links">
+        <a class="site-link" data-site-url="https://chatgpt.com/" href="https://chatgpt.com/"><img class="site-favicon" alt="" />ChatGPT</a>
+        <a class="site-link" data-site-url="https://chat.qwen.ai/" href="https://chat.qwen.ai/"><img class="site-favicon" alt="" />Qwen</a>
+        <a class="site-link" data-site-url="https://online-tools-pro.blogspot.com/" href="https://online-tools-pro.blogspot.com/"><img class="site-favicon" alt="" />Online Tools Pro</a>
+        <a class="site-link" data-site-url="https://news.ycombinator.com/" href="https://news.ycombinator.com/"><img class="site-favicon" alt="" />Hacker News</a>
+      </nav>
+      <time class="date" id="date"></time>
+    </header>
+
+    <main class="page-shell">
+      <section class="welcome" aria-labelledby="welcome-title">
+        <p class="eyebrow" id="greeting">A new page, a little room to think</p>
+        <h1 id="welcome-title"><time id="clock">--:--</time></h1>
+        <p class="welcome__date" id="welcomeDate"></p>
+        <form class="search" id="form" role="search">
+          <label class="visually-hidden" for="searchInput">Search or enter an address</label>
+          <input id="searchInput" type="search" name="search" placeholder="Search the web or enter an address" autocomplete="off" />
+          <button type="submit" aria-label="Search">
+            <img src="../assets/icons/search.svg" alt="" />
+          </button>
+        </form>
+        <div class="shortcuts" aria-label="Frequently visited sites">
+          <a class="shortcut site-link" data-site-url="https://chatgpt.com/" href="https://chatgpt.com/"><img class="shortcut__favicon" alt="" /><b>ChatGPT</b></a>
+          <a class="shortcut site-link" data-site-url="https://chat.qwen.ai/" href="https://chat.qwen.ai/"><img class="shortcut__favicon" alt="" /><b>Qwen</b></a>
+          <a class="shortcut site-link" data-site-url="https://online-tools-pro.blogspot.com/" href="https://online-tools-pro.blogspot.com/"><img class="shortcut__favicon" alt="" /><b>Online Tools Pro</b></a>
+          <a class="shortcut site-link" data-site-url="https://www.youtube.com/" href="https://www.youtube.com/"><img class="shortcut__favicon" alt="" /><b>YouTube</b></a>
+          <a class="shortcut site-link" data-site-url="https://news.ycombinator.com/" href="https://news.ycombinator.com/"><img class="shortcut__favicon" alt="" /><b>Hacker News</b></a>
+        </div>
+      </section>
+
+      <section class="widgets" id="widgets" aria-label="Your widgets">
+        <article class="widget widget--news" id="newsWidget" hidden>
+          <header class="widget__header">
+            <div><p class="eyebrow">The front page</p><h2>Top stories</h2></div>
+            <a class="site-link" data-site-url="https://news.ycombinator.com/" href="https://news.ycombinator.com/" aria-label="Open Hacker News"><img class="site-favicon" alt="" />↗</a>
+          </header>
+          <ol class="story-list" id="news" aria-live="polite"></ol>
+          <p class="widget__notice" id="newsNotice"></p>
+        </article>
+
+        <article class="widget widget--weather" id="weatherWidget" hidden>
+          <header class="widget__header">
+            <div><p class="eyebrow">Outside, right now</p><h2 id="weatherPlace">Weather</h2></div>
+            <span class="weather-icon" id="weatherIcon" aria-hidden="true">--</span>
+          </header>
+          <div class="temperature" id="temperature">--°</div>
+          <p class="weather-summary" id="weatherSummary">Loading forecast</p>
+          <p class="weather-detail" id="weatherDetail"></p>
+          <p class="widget__notice" id="weatherNotice"></p>
+        </article>
+      </section>
+      <footer class="attribution" id="attribution" hidden></footer>
+    </main>
+
+    <template id="story-template">
+      <li class="story">
+        <span class="story__rank"></span>
+        <div class="story__body">
+          <a class="story__title" target="_self"></a>
+          <p class="story__meta"></p>
+        </div>
+        <span class="story__arrow" aria-hidden="true">↗</span>
+      </li>
+    </template>
+  </body>
+</html>

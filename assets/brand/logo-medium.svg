@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <!-- Linear Gradient for Globe & X -->
+    <linearGradient id="primary-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1DA1F2" />
+      <stop offset="100%" stop-color="#0D529C" />
+    </linearGradient>
+  </defs>
+
+  <!-- Center Globe Group -->
+  <g transform="translate(200, 200)">
+    <!-- Globe Outer Circle -->
+    <circle cx="0" cy="0" r="180" fill="none" stroke="url(#primary-grad)" stroke-width="12" />
+    
+    <!-- Equator Line -->
+    <line x1="-180" y1="0" x2="180" y2="0" stroke="url(#primary-grad)" stroke-width="8" opacity="0.6" />
+
+    <!-- Latitude Curves -->
+    <path d="M -155,-90 Q 0,-38 155,-90" fill="none" stroke="url(#primary-grad)" stroke-width="8" opacity="0.5" />
+    <path d="M -155,90 Q 0,38 155,90" fill="none" stroke="url(#primary-grad)" stroke-width="8" opacity="0.5" />
+
+    <!-- Longitude Ellipses -->
+    <ellipse cx="0" cy="0" rx="120" ry="180" fill="none" stroke="url(#primary-grad)" stroke-width="8" opacity="0.6" />
+    <ellipse cx="0" cy="0" rx="60" ry="180" fill="none" stroke="url(#primary-grad)" stroke-width="8" opacity="0.6" />
+
+    <!-- Center Prime Meridian -->
+    <line x1="0" y1="-180" x2="0" y2="180" stroke="url(#primary-grad)" stroke-width="8" opacity="0.6" />
+
+    <!-- Center X Badge Overlay -->
+    <circle cx="0" cy="0" r="75" fill="#FFFFFF" stroke="#1DA1F2" stroke-width="8" />
+    
+    <!-- Centered X Symbol -->
+    <path d="M -35,-35 L 35,35 M 35,-35 L -35,35" stroke="#1DA1F2" stroke-width="20" stroke-linecap="round" />
+  </g>
+</svg>

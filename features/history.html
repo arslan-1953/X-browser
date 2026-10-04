@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>History</title>
+    <style>
+      body {
+        margin: 0;
+        background: #0f172a;
+        color: #e5e7eb;
+        font-family: Arial, sans-serif;
+      }
+      .wrap {
+        padding: 20px;
+      }
+      .card {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 14px;
+        padding: 18px;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      select, button {
+        background: #1f2937;
+        color: #f3f4f6;
+        border: 1px solid #374151;
+        border-radius: 8px;
+        padding: 9px 12px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+      }
+      button img {
+        width: 16px;
+        height: 16px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #0b1220;
+        border: 1px solid #1f2937;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 10px;
+      }
+      .meta {
+        flex: 1;
+        min-width: 0;
+      }
+      .title {
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .url {
+        color: #9ca3af;
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .time {
+        color: #94a3b8;
+        font-size: 12px;
+        margin-left: 6px;
+      }
+      .tiny {
+        background: #0f172a;
+        color: #e5e7eb;
+        padding: 7px 9px;
+      }
+      .topbar h2 { display: flex; align-items: center; gap: 9px; }
+      .topbar h2 img { width: 22px; height: 22px; }
+      .empty {
+        padding: 18px;
+        color: #9ca3af;
+      }
+      @media (max-width: 700px) {
+        .topbar { align-items: flex-start; flex-wrap: wrap; }
+        .topbar > * { flex: 1 1 auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <div class="topbar">
+          <h2 style="margin:0;"><img src="../assets/icons/history.svg" alt="" /> History</h2>
+          <select id="historyRange">
+            <option value="past-hour">Past hour</option>
+            <option value="past-day">Past 24 hours</option>
+            <option value="past-week">Past 7 days</option>
+            <option value="all">All history</option>
+          </select>
+          <button id="deleteSelected"><img src="../assets/icons/trash.svg" alt="" /> Delete selected</button>
+          <button id="clearHistory"><img src="../assets/icons/trash.svg" alt="" /> Clear history</button>
+        </div>
+        <ul id="historyList"></ul>
+      </div>
+    </div>
+
+    <script>
+      const historyData = __HISTORY_ITEMS__;
+      const list = document.getElementById('historyList');
+
+      function renderHistory() {
+        list.innerHTML = '';
+        if (!historyData || historyData.length === 0) {
+          list.innerHTML = '<li class="empty">No history available.</li>';
+          return;
+        }
+
+        historyData.forEach((item) => {
+          const li = document.createElement('li');
+          const check = document.createElement('input');
+          check.type = 'checkbox';
+          check.value = item.url;
+
+          const info = document.createElement('div');
+          info.className = 'meta';
+          const title = document.createElement('div');
+          title.className = 'title';
+          title.textContent = item.title || item.url;
+          const url = document.createElement('div');
+          url.className = 'url';
+          url.textContent = item.url || '';
+          info.appendChild(title);
+          info.appendChild(url);
+
+          const time = document.createElement('div');
+          time.className = 'time';
+          time.textContent = item.time || '';
+
+          const openBtn = document.createElement('button');
+          openBtn.className = 'tiny';
+          const openIcon = document.createElement('img');
+          openIcon.src = '../assets/icons/open.svg';
+          openIcon.alt = '';
+          openBtn.append(openIcon, document.createTextNode('Open'));
+          openBtn.addEventListener('click', function () {
+            window.location = 'x-browser://history-open?payload=' + encodeURIComponent(JSON.stringify({ url: item.url }));
+          });
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'tiny';
+          const deleteIcon = document.createElement('img');
+          deleteIcon.src = '../assets/icons/trash.svg';
+          deleteIcon.alt = '';
+          deleteBtn.append(deleteIcon, document.createTextNode('Delete'));
+          deleteBtn.addEventListener('click', function () {
+            window.location = 'x-browser://history-delete?payload=' + encodeURIComponent(JSON.stringify({ items: [item.url] }));
+          });
+
+          li.appendChild(check);
+          li.appendChild(info);
+          li.appendChild(time);
+          li.appendChild(openBtn);
+          li.appendChild(deleteBtn);
+          list.appendChild(li);
+        });
+      }
+
+      document.getElementById('clearHistory').addEventListener('click', function () {
+        const payload = JSON.stringify({ action: 'clear', range: document.getElementById('historyRange').value });
+        window.location = 'x-browser://history-clear?payload=' + encodeURIComponent(payload);
+      });
+
+      document.getElementById('deleteSelected').addEventListener('click', function () {
+        const items = Array.from(list.querySelectorAll('input[type="checkbox"]:checked')).map((check) => check.value);
+        if (items.length) {
+          window.location = 'x-browser://history-delete?payload=' + encodeURIComponent(JSON.stringify({ items }));
+        }
+      });
+
+      renderHistory();
+    </script>
+  </body>
+</html>

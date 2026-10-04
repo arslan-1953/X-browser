@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bookmarks</title>
+    <style>
+      :root { color-scheme: dark; font-family: "Poppins", sans-serif; }
+      body { margin: 0; min-height: 100vh; background: #0f172a; color: #e5e7eb; }
+      main { width: min(900px, calc(100% - 36px)); margin: 0 auto; padding: 34px 0; }
+      header { display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #334155; padding-bottom: 18px; }
+      header img { width: 24px; height: 24px; }
+      h1 { margin: 0; font-size: 22px; font-weight: 500; }
+      #bookmarkList { list-style: none; margin: 0; padding: 0; }
+      .bookmark { padding: 16px 0; border-bottom: 1px solid #273449; }
+      .bookmark-row { display: flex; align-items: center; gap: 12px; }
+      .bookmark-main { flex: 1; min-width: 0; }
+      .bookmark-title, .bookmark-url { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .bookmark-title { color: #f8fafc; font-size: 14px; }
+      .bookmark-url { margin-top: 4px; color: #94a3b8; font-size: 12px; }
+      .bookmark-actions { display: flex; gap: 4px; }
+      .icon-button { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid transparent; border-radius: 5px; background: transparent; cursor: pointer; }
+      .icon-button:hover, .icon-button:focus-visible { border-color: #64748b; background: #1e293b; outline: none; }
+      .icon-button img { width: 18px; height: 18px; }
+      .edit-form { display: grid; grid-template-columns: 1fr 1.5fr auto; gap: 8px; margin-top: 12px; }
+      .edit-form[hidden] { display: none; }
+      input { min-width: 0; padding: 9px 10px; border: 1px solid #475569; border-radius: 4px; background: #111c2d; color: #f8fafc; font: inherit; font-size: 12px; }
+      .save-edit { border: 1px solid #c5e982; border-radius: 4px; background: #c5e982; color: #172126; padding: 0 14px; font: inherit; font-size: 12px; cursor: pointer; }
+      .empty { margin-top: 28px; color: #94a3b8; font-size: 14px; }
+      @media (max-width: 600px) { main { width: calc(100% - 28px); padding-top: 22px; } .edit-form { grid-template-columns: 1fr; } .save-edit { min-height: 38px; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header><img src="../assets/icons/bookmark.svg" alt="" /><h1>Bookmarks</h1></header>
+      <p class="empty" id="emptyMessage" hidden>No bookmarks saved yet.</p>
+      <ul id="bookmarkList"></ul>
+    </main>
+    <script>
+      const bookmarks = __BOOKMARK_ITEMS__;
+      const list = document.getElementById("bookmarkList");
+      const emptyMessage = document.getElementById("emptyMessage");
+
+      function sendAction(action, data) {
+        window.location = `x-browser://${action}?payload=${encodeURIComponent(JSON.stringify(data))}`;
+      }
+
+      function makeIconButton(icon, label, callback) {
+        const button = document.createElement("button");
+        button.className = "icon-button";
+        button.type = "button";
+        button.title = label;
+        button.setAttribute("aria-label", label);
+        const image = document.createElement("img");
+        image.src = `../assets/icons/${icon}.svg`;
+        image.alt = "";
+        button.appendChild(image);
+        button.addEventListener("click", callback);
+        return button;
+      }
+
+      function render() {
+        list.replaceChildren();
+        emptyMessage.hidden = bookmarks.length !== 0;
+        bookmarks.forEach((bookmark) => {
+          const item = document.createElement("li");
+          item.className = "bookmark";
+          const row = document.createElement("div");
+          row.className = "bookmark-row";
+          const details = document.createElement("div");
+          details.className = "bookmark-main";
+          const title = document.createElement("span");
+          title.className = "bookmark-title";
+          title.textContent = bookmark.title;
+          const url = document.createElement("span");
+          url.className = "bookmark-url";
+          url.textContent = bookmark.url;
+          details.append(title, url);
+          const actions = document.createElement("div");
+          actions.className = "bookmark-actions";
+          actions.append(
+            makeIconButton("open", "Open bookmark", () => sendAction("bookmark-open", { url: bookmark.url })),
+            makeIconButton("edit", "Edit bookmark", () => { form.hidden = !form.hidden; }),
+            makeIconButton("trash", "Delete bookmark", () => sendAction("bookmark-delete", { url: bookmark.url }))
+          );
+
+          const form = document.createElement("form");
+          form.className = "edit-form";
+          form.hidden = true;
+          const titleInput = document.createElement("input");
+          titleInput.value = bookmark.title;
+          titleInput.maxLength = 250;
+          titleInput.setAttribute("aria-label", "Bookmark title");
+          const urlInput = document.createElement("input");
+          urlInput.value = bookmark.url;
+          urlInput.maxLength = 2048;
+          urlInput.setAttribute("aria-label", "Bookmark URL");
+          const save = document.createElement("button");
+          save.className = "save-edit";
+          save.textContent = "Save";
+          form.append(titleInput, urlInput, save);
+          form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            sendAction("bookmark-edit", { oldUrl: bookmark.url, title: titleInput.value.trim(), url: urlInput.value.trim() });
+          });
+          item.append(row, form);
+          row.append(details, actions);
+          list.appendChild(item);
+        });
+      }
+
+      render();
+    </script>
+  </body>
+</html>

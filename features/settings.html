@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings</title>
+    <style>
+      body {
+        margin: 0;
+        background: #0f172a;
+        color: #e5e7eb;
+        font-family: Arial, sans-serif;
+      }
+      .wrap {
+        padding: 20px;
+      }
+      .card {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 14px;
+        padding: 18px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      }
+      h2 {
+        margin: 0 0 16px;
+        font-size: 22px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #1f2937;
+      }
+      label {
+        color: #d1d5db;
+        font-size: 14px;
+      }
+      select, button {
+        background: #1f2937;
+        color: #f3f4f6;
+        border: 1px solid #374151;
+        border-radius: 8px;
+        padding: 9px 12px;
+        font-size: 14px;
+      }
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+      }
+      input[type="text"] {
+        width: min(220px, 55vw);
+        background: #1f2937;
+        color: #f3f4f6;
+        border: 1px solid #374151;
+        border-radius: 8px;
+        padding: 9px 12px;
+      }
+      .save {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        margin-top: 18px;
+        width: 100%;
+        background: #2563eb;
+        border-color: #60a5fa;
+      }
+      .save img, .choose-wallpaper img {
+        width: 17px;
+        height: 17px;
+      }
+      .wallpaper-control {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .choose-wallpaper {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        white-space: nowrap;
+      }
+      @media (max-width: 600px) {
+        .row { align-items: flex-start; flex-direction: column; gap: 10px; }
+        .wallpaper-control { width: 100%; flex-wrap: wrap; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <h2>Settings</h2>
+
+        <div class="row">
+          <label for="defaultSearch">Default search engine</label>
+          <select id="defaultSearch">
+            <option value="duckduckgo">DuckDuckGo</option>
+            <option value="google">Google</option>
+            <option value="bing">Bing</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label for="openOnStart">Open startup page on launch</label>
+          <input type="checkbox" id="openOnStart" __OPEN_ON_START__ />
+        </div>
+        <div class="row">
+          <label for="startupURL">Startup URL</label>
+          <input type="text" id="startupURL" value="__STARTUP_URL__" placeholder="Blank opens the homepage" />
+        </div>
+
+        <div class="row">
+          <label for="fastDownload">Fast download mode</label>
+          <input type="checkbox" id="fastDownload" __FAST_DOWNLOAD__ />
+        </div>
+        <p style="color:#9ca3af;font-size:12px;line-height:1.5;">X Downloader v2 uses parallel byte ranges when the server supports them. Fast mode runs one file at a time; it does not limit network use by web pages.</p>
+
+        <h3>New tab</h3>
+        <div class="row">
+          <label for="homepageNews">Top stories (Hacker News)</label>
+          <input type="checkbox" id="homepageNews" __HOME_NEWS__ />
+        </div>
+        <div class="row">
+          <label for="homepageWeather">Weather (Open-Meteo)</label>
+          <input type="checkbox" id="homepageWeather" __HOME_WEATHER__ />
+        </div>
+        <div class="row">
+          <label for="weatherCity">Weather city</label>
+          <input type="text" id="weatherCity" maxlength="80" value="__HOME_CITY__" placeholder="e.g. Seattle" />
+        </div>
+        <div class="row">
+          <label for="homepageWallpaper">Homepage wallpaper</label>
+          <div class="wallpaper-control">
+            <select id="homepageWallpaper"></select>
+            <button type="button" id="chooseWallpaper" class="choose-wallpaper">
+              <img src="../assets/icons/open.svg" alt="" /> Choose image
+            </button>
+          </div>
+        </div>
+
+        <button id="saveSettings" class="save"><img src="../assets/icons/gear.svg" alt="" /> Save settings</button>
+      </div>
+    </div>
+
+    <script>
+      const currentValue = "__SEARCH_ENGINE__";
+      const engineSelect = document.getElementById('defaultSearch');
+      engineSelect.value = currentValue;
+      const wallpaperOptions = __WALLPAPER_OPTIONS__;
+      const wallpaperSelect = document.getElementById('homepageWallpaper');
+      const selectedWallpaper = __HOME_WALLPAPER__;
+      wallpaperOptions.forEach((wallpaper) => {
+        const option = document.createElement('option');
+        option.value = wallpaper.url;
+        option.textContent = wallpaper.label;
+        wallpaperSelect.appendChild(option);
+      });
+      if (!wallpaperOptions.some((wallpaper) => wallpaper.url === selectedWallpaper)) {
+        const option = document.createElement('option');
+        option.value = selectedWallpaper;
+        option.textContent = 'Custom image';
+        wallpaperSelect.appendChild(option);
+      }
+      wallpaperSelect.value = selectedWallpaper;
+
+      document.getElementById('chooseWallpaper').addEventListener('click', function () {
+        window.location = 'x-browser://wallpaper-choose';
+      });
+
+      document.getElementById('saveSettings').addEventListener('click', function () {
+        const payload = JSON.stringify({
+          searchEngine: engineSelect.value,
+          openOnStart: document.getElementById('openOnStart').checked,
+          startupUrl: document.getElementById('startupURL').value,
+          fastDownload: document.getElementById('fastDownload').checked,
+          homepageNews: document.getElementById('homepageNews').checked,
+          homepageWeather: document.getElementById('homepageWeather').checked,
+          weatherCity: document.getElementById('weatherCity').value,
+          wallpaper: wallpaperSelect.value
+        });
+        window.location = 'x-browser://settings-save?payload=' + encodeURIComponent(payload);
+      });
+    </script>
+  </body>
+</html>

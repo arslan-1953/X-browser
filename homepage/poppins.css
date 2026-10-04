@@ -1,0 +1,36 @@
+/* poppins-regular - latin */
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  src: local(""),
+    url("../assets/fonts/poppins/poppins-v19-latin-regular.woff")
+      format("woff");
+}
+/* poppins-500 - latin */
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  src: local(""),
+    url("../assets/fonts/poppins/poppins-v19-latin-500.woff")
+      format("woff");
+}
+/* poppins-600 - latin */
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  src: local(""),
+    url("../assets/fonts/poppins/poppins-v19-latin-600.woff")
+      format("woff");
+}
+/* poppins-700 - latin */
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  src: local(""),
+    url("../assets/fonts/poppins/poppins-v19-latin-700.woff")
+      format("woff");
+}

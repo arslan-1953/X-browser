@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>X Downloader v2</title>
+    <style>
+      body { margin: 0; background: #0f172a; color: #e5e7eb; font-family: Arial, sans-serif; }
+      .wrap { padding: 20px; }
+      .card { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 18px; }
+      .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+      h2 { margin: 0; font-size: 22px; }
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        background: #1f2937;
+        color: #f3f4f6;
+        border: 1px solid #374151;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      button:hover { background: #293548; border-color: #64748b; }
+      button img { width: 16px; height: 16px; }
+      ul { list-style: none; padding: 0; margin: 0; }
+      li {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: #0b1220;
+        border: 1px solid #1f2937;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 10px;
+      }
+      .file-icon { width: 38px; height: 42px; flex: 0 0 38px; }
+      .info { flex: 1; min-width: 0; }
+      .file { font-weight: 600; overflow-wrap: anywhere; }
+      .details { color: #9ca3af; font-size: 12px; margin-top: 3px; overflow-wrap: anywhere; }
+      .status { color: #cbd5e1; font-size: 12px; margin-top: 5px; }
+      .error { color: #fca5a5; font-size: 12px; margin-top: 4px; overflow-wrap: anywhere; }
+      progress { display: block; width: 100%; max-width: 420px; height: 8px; margin-top: 8px; accent-color: #38bdf8; }
+      .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+      .empty { padding: 18px; color: #9ca3af; }
+      @media (max-width: 720px) {
+        li { align-items: flex-start; flex-wrap: wrap; }
+        .actions { width: 100%; justify-content: flex-start; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <div class="topbar">
+          <h2>X Downloader v2</h2>
+          <button id="clearDownloads"><img src="../assets/icons/trash.svg" alt="" /> Clear downloads</button>
+        </div>
+        <ul id="downloadsList"></ul>
+      </div>
+    </div>
+
+    <script>
+      const downloadsData = __DOWNLOAD_ITEMS__;
+      const list = document.getElementById('downloadsList');
+      const typeIcon = (name) => {
+        const extension = (name.split('.').pop() || '').toLowerCase();
+        if (['mp4', 'mov', 'avi', 'mkv', 'webm', 'mpeg', 'mpg'].includes(extension)) return 'video';
+        if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg', 'tif', 'tiff'].includes(extension)) return 'image';
+        if (['zip', 'rar', '7z', 'tar', 'gz', 'bz2'].includes(extension)) return 'archive';
+        if (['exe', 'msi', 'dmg', 'apk', 'deb', 'appimage'].includes(extension)) return 'executable';
+        if (['pdf', 'doc', 'docx', 'txt', 'rtf', 'odt', 'xls', 'xlsx', 'ppt', 'pptx', 'csv'].includes(extension)) return 'document';
+        if (['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a'].includes(extension)) return 'audio';
+        if (['js', 'ts', 'py', 'html', 'css', 'json', 'xml', 'java', 'c', 'cpp', 'rs', 'go'].includes(extension)) return 'code';
+        return 'file';
+      };
+      const actionButton = (label, icon, action, item) => {
+        const button = document.createElement('button');
+        const image = document.createElement('img');
+        image.src = `../assets/icons/${icon}.svg`;
+        image.alt = '';
+        button.append(image, document.createTextNode(label));
+        button.addEventListener('click', () => {
+          window.location = `x-browser://${action}?payload=${encodeURIComponent(JSON.stringify({ id: item.id, path: item.path }))}`;
+        });
+        return button;
+      };
+
+      function renderDownloads(items = downloadsData) {
+        list.innerHTML = '';
+        if (!items || items.length === 0) {
+          list.innerHTML = '<li class="empty">No downloads yet.</li>';
+          return;
+        }
+
+        items.forEach((item) => {
+          const li = document.createElement('li');
+          const icon = document.createElement('img');
+          icon.className = 'file-icon';
+          icon.src = `../assets/icons/file-types/${typeIcon(item.name || '')}.svg`;
+          icon.alt = `${typeIcon(item.name || '')} file`;
+
+          const info = document.createElement('div');
+          info.className = 'info';
+          const name = document.createElement('div');
+          name.className = 'file';
+          name.textContent = item.name || 'Download';
+          const details = document.createElement('div');
+          details.className = 'details';
+          details.textContent = `${item.path || ''} | ${item.size || ''} | ${item.time || ''}`;
+          const status = document.createElement('div');
+          status.className = 'status';
+          status.textContent = item.status || 'Complete';
+          info.append(name, details, status);
+          if (item.error) {
+            const error = document.createElement('div');
+            error.className = 'error';
+            error.textContent = item.error;
+            info.appendChild(error);
+          }
+          if (['Downloading', 'Queued', 'Paused', 'Pausing', 'Finalizing'].some((state) => (item.status || '').startsWith(state))) {
+            const progress = document.createElement('progress');
+            progress.max = 100;
+            progress.value = Number(item.progress) || 0;
+            info.appendChild(progress);
+          }
+
+          const actions = document.createElement('div');
+          actions.className = 'actions';
+          if ((item.status || '').startsWith('Downloading')) {
+            actions.appendChild(actionButton('Pause', 'pause', 'download-toggle', item));
+            actions.appendChild(actionButton('Cancel', 'close', 'download-cancel', item));
+          } else if (item.status === 'Pausing' || item.status === 'Finalizing' || item.status === 'Cancelling') {
+            actions.appendChild(actionButton('Cancel', 'close', 'download-cancel', item));
+          } else if (item.status === 'Queued') {
+            actions.appendChild(actionButton('Cancel', 'close', 'download-cancel', item));
+          } else if (item.status === 'Paused') {
+            actions.appendChild(actionButton('Resume', 'play', 'download-toggle', item));
+            actions.appendChild(actionButton('Cancel', 'close', 'download-cancel', item));
+          } else if (['Failed', 'Interrupted', 'Cancelled'].includes(item.status)) {
+            actions.appendChild(actionButton('Retry', 'retry', 'download-retry', item));
+          } else if (item.status === 'Complete') {
+            actions.appendChild(actionButton('Redownload', 'retry', 'download-redownload', item));
+          }
+          actions.appendChild(actionButton('Copy URL', 'copy', 'download-copy-url', item));
+          actions.appendChild(actionButton('Open', 'open', 'download-open', item));
+          actions.appendChild(actionButton('Show folder', 'folder', 'download-show-folder', item));
+          li.append(icon, info, actions);
+          list.appendChild(li);
+        });
+      }
+
+      window.updateDownloads = (items) => {
+        downloadsData.splice(0, downloadsData.length, ...items);
+        renderDownloads();
+      };
+
+      document.getElementById('clearDownloads').addEventListener('click', function () {
+        window.location = 'x-browser://download-clear?payload=' + encodeURIComponent(JSON.stringify({ action: 'clear' }));
+      });
+
+      renderDownloads();
+    </script>
+  </body>
+</html>
