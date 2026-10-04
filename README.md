@@ -1,5 +1,7 @@
 # X Browser
 
+![Screenshoot](https://github.com/arslan-1953/X-browser/blob/main/Screenshot.png)
+
 X Browser is a desktop browser built with Python, PyQt6, and Qt WebEngine (Chromium). It provides tabbed browsing, an address/search bar, built-in settings/history/download pages, an opt-in API-powered homepage, private windows, X Downloader v2, and per-tab renderer recovery.
 
 ## Requirements
